@@ -1,17 +1,136 @@
 <!DOCTYPE html>
-<html>
-    <head>
-        <meta charset="utf-8"></meta>
-        <title>FPS</title>
-        <link rel="stylesheet" href="game.css" type="text/css" charset="utf-8"/>
-    </head>
-    <body>
-        <canvas id="canvas"></canvas> 
-        <canvas id="minimap"></canvas>
-        <script type="text/javascript" src="jaws.js"></script>
-        <script type="text/javascript" src="game.js"></script>
-        <script type="text/javascript">
-            jaws.start(Game); //Game defined in "game.js"
-        </script>
-    </body>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Raycaster</title>
+    <script
+          src="https://code.jquery.com/jquery-3.3.1.min.js"
+          integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8="
+          crossorigin="anonymous"></script>
+</head>
+<body>
+    <canvas id="minimap"></canvas>
+    <script>
+        
+        // a 32x7 block map
+        var map = [
+            [1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1],
+            [1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1],
+            [1,0,0,2,0,0,0,0,2,2,2,2,2,2,2,2,2,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1],
+            [1,0,0,2,0,0,0,0,2,2,2,2,2,2,2,2,2,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1],
+            [1,0,0,2,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1],
+            [1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1],
+            [1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1]
+        ];
+
+        var mapWidth = 0;
+        var MapHeight = 0;
+        var miniMapScale = 16;
+
+        $(document).ready(function(){
+            mapWidth = map[0].length;
+            mapHeight = map.length;
+
+            bindKeys();
+            drawMiniMap();
+            gameCycle();
+        });
+
+        function bindKeys(){
+            document.onkeydown = function(e) {
+                e = e || window.event;
+                switch(e.keyCode) {
+                    case 38: //Up
+                        player.speed = 1;
+                        break;
+                    case 40: //Down
+                        player.speed = -1;
+                        break;
+                    case 37: //Left
+                        player.dir = -1;
+                        break;
+                    case 39: //Right
+                        player.dir = 1;
+                        break;
+                }
+            }
+
+            document.onkeyup = function(e) {
+                e = e || window.event;
+                switch(e.keyCode){
+                    case 38:
+                    case 40:
+                        player.speed = 0;
+                        break;
+                    case 37:
+                    case 38:
+                        player.dir = 0;
+                        console.log(player.dir);
+                        break;
+                }
+            }
+        }
+
+        function drawMiniMap() {
+            //Draw topdown view of minimap
+            var miniMap = document.getElementById("minimap");
+            //Resize the internal canvas dimensions
+            miniMap.width = mapWidth * miniMapScale;
+            miniMap.height = mapHeight * miniMapScale;
+            //Reize the canvas CSS dimensions
+            miniMap.style.width = (mapWidth * miniMapScale) + "px";
+            miniMap.style.height = (mapHeight * miniMapScale) + "px";
+
+            //Loop through all blocks on the map
+            var ctx = miniMap.getContext("2d");
+            for(let y = 0; y < mapHeight; y++){
+                for(let x = 0; x < mapWidth; x++){
+                    //If there is a wall block at this (x,y)...
+                    if(map[y][x] > 0) {
+                        ctx.fillStyle = "rgb(200, 200, 200)"; //Set draw color
+                        ctx.fillRect(x * miniMapScale, y * miniMapScale, miniMapScale, miniMapScale);
+                    }
+                }
+            }
+
+            //Draw player
+            ctx.fillStyle = "rgb(100, 100, 0)";
+            ctx.fillRect(player.x, player.y, miniMapScale/2, miniMapScale/2);
+            //Draw little 'protrusion' from front of player to tell rot
+            ctx.beginPath();
+            ctx.moveTo(player.x + miniMapScale/4, player.y + miniMapScale/4);
+            ctx.lineTo(player.x + Math.cos(player.rot) * 32, player.y + Math.sin(player.rot) * 32);
+            ctx.stroke(); //stroke it dude
+        }
+
+        function gameCycle(){
+            move();
+            drawMiniMap();
+            setTimeout(gameCycle, 1000/30); //30 Frames babyyy
+        }
+
+        var player = {
+            x : 16,
+            y : 10,
+            dir : 0, //turning direction, left or right
+            speed : 0, //forward -> 1, backwards -> -1
+            rot : 0, // angle of rotation
+            moveRate : 0.18,
+            rotRate : 6 * Math.PI/180 //rate of rotation
+        }
+
+        function move(){
+            var moveStep = player.speed * player.moveRate; //determines how far player should move
+            player.rot += player.dir * player.rotRate; //rotation modified by direction
+
+            // Calculate new x, y pos of player with trig
+            var newX = player.x + Math.cos(player.rot) * moveStep; //Cos gets the x value of rotation, which determines how far along the x axix moveStep is being modified
+            var newY = player.y + Math.sin(player.rot) * moveStep;
+
+            // Set new position
+            player.x = newX;
+            player.y = newY;
+        }
+    </script>
+</body>
 </html>
