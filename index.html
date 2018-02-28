@@ -16,16 +16,16 @@
         var map = [
             [1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1],
             [1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1],
-            [1,0,0,2,0,0,0,0,2,2,2,2,2,2,2,2,2,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1],
-            [1,0,0,2,0,0,0,0,2,2,2,2,2,2,2,2,2,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1],
-            [1,0,0,2,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1],
+            [1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1],
+            [1,0,0,2,0,0,0,0,2,2,2,0,0,0,2,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1],
+            [1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1],
             [1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1],
             [1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1]
         ];
 
         var mapWidth = 0;
         var MapHeight = 0;
-        var miniMapScale = 16;
+        var miniMapScale = 8;
 
         $(document).ready(function(){
             mapWidth = map[0].length;
@@ -63,9 +63,8 @@
                         player.speed = 0;
                         break;
                     case 37:
-                    case 38:
+                    case 39:
                         player.dir = 0;
-                        console.log(player.dir);
                         break;
                 }
             }
@@ -93,13 +92,17 @@
                 }
             }
 
+            //Actual draw location of player should be modified by scaling factor
+            var actualPlayerX = player.x*miniMapScale;
+            var actualPlayerY = player.y*miniMapScale;
+
             //Draw player
             ctx.fillStyle = "rgb(100, 100, 0)";
-            ctx.fillRect(player.x, player.y, miniMapScale/2, miniMapScale/2);
+            ctx.fillRect(actualPlayerX, actualPlayerY, miniMapScale, miniMapScale);
             //Draw little 'protrusion' from front of player to tell rot
             ctx.beginPath();
-            ctx.moveTo(player.x + miniMapScale/4, player.y + miniMapScale/4);
-            ctx.lineTo(player.x + Math.cos(player.rot) * 32, player.y + Math.sin(player.rot) * 32);
+            ctx.moveTo(actualPlayerX + miniMapScale/2, actualPlayerY + miniMapScale/2);
+            ctx.lineTo(actualPlayerX + Math.cos(player.rot) * 32, actualPlayerY + Math.sin(player.rot) * 32);
             ctx.stroke(); //stroke it dude
         }
 
@@ -110,8 +113,8 @@
         }
 
         var player = {
-            x : 16,
-            y : 10,
+            x : 5,
+            y : 2,
             dir : 0, //turning direction, left or right
             speed : 0, //forward -> 1, backwards -> -1
             rot : 0, // angle of rotation
@@ -124,8 +127,20 @@
             player.rot += player.dir * player.rotRate; //rotation modified by direction
 
             // Calculate new x, y pos of player with trig
-            var newX = player.x + Math.cos(player.rot) * moveStep; //Cos gets the x value of rotation, which determines how far along the x axix moveStep is being modified
+            var newX = player.x + Math.cos(player.rot) * moveStep; //Cos gets the x value of rotation, which determines how far along the x axix moveStep should being modified
             var newY = player.y + Math.sin(player.rot) * moveStep;
+
+            // Check if new x, y is out of bounds
+            if (newY < 0 || newY >= mapHeight*miniMapScale || newX < 0 || newX >= mapWidth * miniMapScale) {
+                console.log(newX + " " + newY);
+                return;
+            }
+
+            // Check if new x, y is occupying a wall
+            // Use both ceil and floor to consider both ends of the walls
+            if(map[Math.ceil(newY)][Math.ceil(newX)] != 0 || map[Math.floor(newY)][Math.floor(newX)]){
+                return;
+            }
 
             // Set new position
             player.x = newX;
