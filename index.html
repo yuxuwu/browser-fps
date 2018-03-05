@@ -3,15 +3,15 @@
 <head>
     <meta charset="UTF-8">
     <title>Raycaster</title>
-    <script
+    <!-- <script
           src="https://code.jquery.com/jquery-3.3.1.min.js"
           integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8="
-          crossorigin="anonymous"></script>
+          crossorigin="anonymous"></script>-->
 </head>
 <body>
     <canvas id="minimap"></canvas>
     <script>
-        
+
         // a 32x7 block map
         var map = [
             [1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1],
@@ -27,14 +27,15 @@
         var MapHeight = 0;
         var miniMapScale = 8;
 
-        $(document).ready(function(){
+        /* On document loaded */
+        document.addEventListener("DOMContentLoaded", function(){
             mapWidth = map[0].length;
             mapHeight = map.length;
 
             bindKeys();
             drawMiniMap();
             gameCycle();
-        });
+        }, false);
 
         function bindKeys(){
             document.onkeydown = function(e) {
@@ -99,16 +100,19 @@
             //Draw player
             ctx.fillStyle = "rgb(100, 100, 0)";
             ctx.fillRect(actualPlayerX, actualPlayerY, miniMapScale, miniMapScale);
+            /*
             //Draw little 'protrusion' from front of player to tell rot
             ctx.beginPath();
             ctx.moveTo(actualPlayerX + miniMapScale/2, actualPlayerY + miniMapScale/2);
             ctx.lineTo(actualPlayerX + Math.cos(player.rot) * 32, actualPlayerY + Math.sin(player.rot) * 32);
             ctx.stroke(); //stroke it dude
+            */
         }
 
         function gameCycle(){
             move();
             drawMiniMap();
+            castRays();
             setTimeout(gameCycle, 1000/30); //30 Frames babyyy
         }
 
@@ -145,6 +149,98 @@
             // Set new position
             player.x = newX;
             player.y = newY;
+        }
+
+        function castRays(){
+            var num_rays = 320;
+            var fov = 60 * Math.PI/180;
+            var angle_increment = fov/320;;
+
+            var miniMap = document.getElementById("minimap");
+            var ctx = miniMap.getContext("2d");
+
+            for(let i = 0; i < 320; i++){
+                //cast ray from player until it hits wall
+                var ray_hit = castSingleRay(player.rot+angle_increment*i, player.x, player.y); //angle_increment*i to get next angle
+                //draw where ray was hit
+                ctx.beginPath();
+                ctx.moveTo(player.x*miniMapScale + miniMapScale/2, player.y*miniMapScale + miniMapScale/2);
+                ctx.lineTo(ray_hit.xHit*8, ray_hit.yHit*8);
+                ctx.stroke();
+            }
+        }
+
+        function castSingleRay(angle, p_x, p_y){
+            // Intermittent variable declarations
+            var xHit_vert, yHit_vert;
+            var xHit_horiz, yHit_horiz;
+            var dX, dY;
+            var x, y;
+
+            angle %= Math.PI * 2; // don't let angles exceed 2PI
+            if(angle > 0) angle += Math.PI*2;
+
+            var vertical_dist = Number.MAX_SAFE_INTEGER;
+            var horizontal_dist = Number.MAX_SAFE_INTEGER;
+            var up, right;
+
+            // Check which way the angle is facing
+            up = (Math.sin(angle) > 0) ? true : false;
+            right = (Math.cos(angle) > 0) ? true : false;
+
+            // Find vertical distance by getting only vertical grid lines
+            dX = right ? 1 : -1; //change over x
+            dY = dX * Math.tan(angle); //change over y
+            // Find first x, y position
+            x = right ? Math.ceil(p_x) : Math.floor(p_x);
+            y = p_y + (x-p_x)*Math.tan(angle);
+            // Find vertical wall
+            while( x >= 0 && x < mapWidth && y >= 0 && y < mapHeight ){
+                var add = right ? 0 : -1;
+                var wallX = Math.floor(x + add);
+                var wallY = Math.floor(y);
+                // Check if point is inside wall
+                if(map[wallY][wallX] > 0){
+                    var distX = x - player.x;
+                    var distY = y - player.y;
+                    vertical_dist = distX*distX + distY*distY; //pythagoras
+                    xHit_vert = x;
+                    yHit_vert = y;
+                    break;
+                }
+                x += dX;
+                y += dY
+            }
+
+            // Find horizontal distance by getting only horizontal grid lines
+            dY = up ? 1 : -1;
+            dX = dY/Math.tan(angle);
+            // Find first x, y position
+            y = up ? Math.ceil(p_y) : Math.floor(p_y);
+            x = p_x + (y-p_y)/Math.tan(angle);
+            // Find horizontal wall
+            while( x >= 0 && x < mapWidth && y >= 0 && y < mapHeight ){
+                var add = up ? 0 : -1;
+                var wallY = Math.floor(y + add);
+                var wallX = Math.floor(y);
+                // Check if point is inside wall
+                if(map[wallY][wallX] > 0){
+                    var distX = x - player.x;
+                    var distY = y - player.y;
+                    horizontal_dist = distX*distX + distY*distY; //pythagoras
+                    xHit_horiz = x;
+                    yHit_horiz = y;
+                    break;
+                }
+                x += dX;
+                y += dY;
+            }
+
+            if(vertical_dist > horizontal_dist){
+                return {xHit: xHit_vert, yHit: yHit_vert};
+            } else {
+                return {xHit: xHit_horiz, yHit: yHit_horiz};
+            }
         }
     </script>
 </body>
