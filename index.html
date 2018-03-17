@@ -9,33 +9,27 @@
           crossorigin="anonymous"></script>-->
 </head>
 <body>
+    <canvas id="screen"></canvas>
     <canvas id="minimap"></canvas>
+    <script src="./globals.js"></script>
     <script>
-
-        // a 32x7 block map
-        var map = [
-            [1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1],
-            [1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1],
-            [1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1],
-            [1,0,0,2,0,0,0,0,2,2,2,0,0,0,2,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1],
-            [1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1],
-            [1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1],
-            [1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1]
-        ];
-
-        var mapWidth = 0;
-        var MapHeight = 0;
-        var miniMapScale = 8;
-
         /* On document loaded */
         document.addEventListener("DOMContentLoaded", function(){
-            mapWidth = map[0].length;
-            mapHeight = map.length;
+            MapWidth = Map[0].length;
+            MapHeight = Map.length;
 
+            screenInit();
             bindKeys();
             drawMiniMap();
             gameCycle();
         }, false);
+
+        function screenInit(){
+            var screen_canvas = document.getElementById("screen");
+            screen_canvas.width = ScreenWidth;
+            screen_canvas.height = ScreenHeight;
+
+        }
 
         function bindKeys(){
             document.onkeydown = function(e) {
@@ -75,38 +69,31 @@
             //Draw topdown view of minimap
             var miniMap = document.getElementById("minimap");
             //Resize the internal canvas dimensions
-            miniMap.width = mapWidth * miniMapScale;
-            miniMap.height = mapHeight * miniMapScale;
+            miniMap.width = MapWidth * MiniMapScale;
+            miniMap.height = MapHeight * MiniMapScale;
             //Reize the canvas CSS dimensions
-            miniMap.style.width = (mapWidth * miniMapScale) + "px";
-            miniMap.style.height = (mapHeight * miniMapScale) + "px";
+            miniMap.style.width = (MapWidth * MiniMapScale) + "px";
+            miniMap.style.height = (MapHeight * MiniMapScale) + "px";
 
             //Loop through all blocks on the map
             var ctx = miniMap.getContext("2d");
-            for(let y = 0; y < mapHeight; y++){
-                for(let x = 0; x < mapWidth; x++){
+            for(let y = 0; y < MapHeight; y++){
+                for(let x = 0; x < MapWidth; x++){
                     //If there is a wall block at this (x,y)...
-                    if(map[y][x] > 0) {
+                    if(Map[y][x] > 0) {
                         ctx.fillStyle = "rgb(200, 200, 200)"; //Set draw color
-                        ctx.fillRect(x * miniMapScale, y * miniMapScale, miniMapScale, miniMapScale);
+                        ctx.fillRect(x * MiniMapScale, y * MiniMapScale, MiniMapScale, MiniMapScale);
                     }
                 }
             }
 
             //Actual draw location of player should be modified by scaling factor
-            var actualPlayerX = player.x*miniMapScale;
-            var actualPlayerY = player.y*miniMapScale;
+            var actualPlayerX = player.x*MiniMapScale-2;
+            var actualPlayerY = player.y*MiniMapScale-2;
 
             //Draw player
             ctx.fillStyle = "rgb(100, 100, 0)";
-            ctx.fillRect(actualPlayerX, actualPlayerY, miniMapScale, miniMapScale);
-            /*
-            //Draw little 'protrusion' from front of player to tell rot
-            ctx.beginPath();
-            ctx.moveTo(actualPlayerX + miniMapScale/2, actualPlayerY + miniMapScale/2);
-            ctx.lineTo(actualPlayerX + Math.cos(player.rot) * 32, actualPlayerY + Math.sin(player.rot) * 32);
-            ctx.stroke(); //stroke it dude
-            */
+            ctx.fillRect(actualPlayerX, actualPlayerY, MiniMapScale/2, MiniMapScale/2);
         }
 
         function gameCycle(){
@@ -135,14 +122,14 @@
             var newY = player.y + Math.sin(player.rot) * moveStep;
 
             // Check if new x, y is out of bounds
-            if (newY < 0 || newY >= mapHeight*miniMapScale || newX < 0 || newX >= mapWidth * miniMapScale) {
+            if (newY < 0 || newY >= MapHeight*MiniMapScale || newX < 0 || newX >= MapWidth*MiniMapScale) {
                 console.log(newX + " " + newY);
                 return;
             }
 
             // Check if new x, y is occupying a wall
             // Use both ceil and floor to consider both ends of the walls
-            if(map[Math.ceil(newY)][Math.ceil(newX)] != 0 || map[Math.floor(newY)][Math.floor(newX)]){
+            if(Map[Math.ceil(newY)][Math.ceil(newX)] != 0 || Map[Math.floor(newY)][Math.floor(newX)] != 0){
                 return;
             }
 
@@ -152,95 +139,126 @@
         }
 
         function castRays(){
-            var num_rays = 320;
-            var fov = 60 * Math.PI/180;
-            var angle_increment = fov/320;;
+            for(let i = 0; i < NumStrips; i++){
+                var ray_screen_pos = (-NumStrips/2 + i) * StripWidth;
+                var ray_view_dist = Math.sqrt(ray_screen_pos*ray_screen_pos + ViewDist*ViewDist);
+                var ray_angle = Math.asin(ray_screen_pos / ray_view_dist);
 
-            var miniMap = document.getElementById("minimap");
-            var ctx = miniMap.getContext("2d");
+                castSingleRay(player.rot+ray_angle);
 
-            for(let i = 0; i < 320; i++){
-                //cast ray from player until it hits wall
-                var ray_hit = castSingleRay(player.rot+angle_increment*i, player.x, player.y); //angle_increment*i to get next angle
-                //draw where ray was hit
-                ctx.beginPath();
-                ctx.moveTo(player.x*miniMapScale + miniMapScale/2, player.y*miniMapScale + miniMapScale/2);
-                ctx.lineTo(ray_hit.xHit*8, ray_hit.yHit*8);
-                ctx.stroke();
             }
         }
+        function castSingleRay(rayAngle) {
 
-        function castSingleRay(angle, p_x, p_y){
-            // Intermittent variable declarations
-            var xHit_vert, yHit_vert;
-            var xHit_horiz, yHit_horiz;
-            var dX, dY;
-            var x, y;
+            let twoPI = Math.PI * 2;
 
-            angle %= Math.PI * 2; // don't let angles exceed 2PI
-            if(angle > 0) angle += Math.PI*2;
+            // first make sure the angle is between 0 and 360 degrees
+            rayAngle %= twoPI;
+            if (rayAngle < 0) rayAngle += twoPI;
 
-            var vertical_dist = Number.MAX_SAFE_INTEGER;
-            var horizontal_dist = Number.MAX_SAFE_INTEGER;
-            var up, right;
+            // moving right/left? up/down? Determined by which quadrant the angle is in.
+            var right = (rayAngle > twoPI * 0.75 || rayAngle < twoPI * 0.25);
+            var up = (rayAngle < 0 || rayAngle > Math.PI);
 
-            // Check which way the angle is facing
-            up = (Math.sin(angle) > 0) ? true : false;
-            right = (Math.cos(angle) > 0) ? true : false;
+            // only do these once
+            var angleSin = Math.sin(rayAngle);
+            var angleCos = Math.cos(rayAngle);
 
-            // Find vertical distance by getting only vertical grid lines
-            dX = right ? 1 : -1; //change over x
-            dY = dX * Math.tan(angle); //change over y
-            // Find first x, y position
-            x = right ? Math.ceil(p_x) : Math.floor(p_x);
-            y = p_y + (x-p_x)*Math.tan(angle);
-            // Find vertical wall
-            while( x >= 0 && x < mapWidth && y >= 0 && y < mapHeight ){
-                var add = right ? 0 : -1;
-                var wallX = Math.floor(x + add);
+
+            var dist = 0;   // the distance to the block we hit
+            var xHit = 0;   // the x and y coord of where the ray hit the block
+            var yHit = 0;
+
+            var textureX;   // the x-coord on the texture of the block, ie. what part of the texture are we going to render
+            var wallX;  // the (x,y) Map coords of the block
+            var wallY;
+
+
+            // first check against the vertical Map/wall lines
+            // we do this by moving to the right or left edge of the block we're standing in
+            // and then moving in 1 Map unit steps horizontally. The amount we have to move vertically
+            // is determined by the slope of the ray, which is simply defined as sin(angle) / cos(angle).
+
+            var slope = angleSin / angleCos; 	// the slope of the straight line made by the ray
+            var dX = right ? 1 : -1;    // we move either 1 Map unit to the left or right
+            var dY = dX * slope;    // how much to move up or down
+
+            var x = right ? Math.ceil(player.x) : Math.floor(player.x);	// starting horizontal position, at one of the edges of the current Map block
+            var y = player.y + (x - player.x) * slope;  // starting vertical position. We add the small horizontal step we just made, multiplied by the slope.
+
+            while (x >= 0 && x < MapWidth && y >= 0 && y < MapHeight) {
+                var wallX = Math.floor(x + (right ? 0 : -1));
                 var wallY = Math.floor(y);
-                // Check if point is inside wall
-                if(map[wallY][wallX] > 0){
-                    var distX = x - player.x;
-                    var distY = y - player.y;
-                    vertical_dist = distX*distX + distY*distY; //pythagoras
-                    xHit_vert = x;
-                    yHit_vert = y;
-                    break;
-                }
-                x += dX;
-                y += dY
-            }
 
-            // Find horizontal distance by getting only horizontal grid lines
-            dY = up ? 1 : -1;
-            dX = dY/Math.tan(angle);
-            // Find first x, y position
-            y = up ? Math.ceil(p_y) : Math.floor(p_y);
-            x = p_x + (y-p_y)/Math.tan(angle);
-            // Find horizontal wall
-            while( x >= 0 && x < mapWidth && y >= 0 && y < mapHeight ){
-                var add = up ? 0 : -1;
-                var wallY = Math.floor(y + add);
-                var wallX = Math.floor(y);
-                // Check if point is inside wall
-                if(map[wallY][wallX] > 0){
+                // is this point inside a wall block?
+                if (Map[wallY][wallX] > 0) {
+
                     var distX = x - player.x;
                     var distY = y - player.y;
-                    horizontal_dist = distX*distX + distY*distY; //pythagoras
-                    xHit_horiz = x;
-                    yHit_horiz = y;
+                    dist = distX*distX + distY*distY;   // the distance from the player to this point, squared.
+
+                    textureX = y % 1;   // where exactly are we on the wall? textureX is the x coordinate on the texture that we'll use when texturing the wall.
+                    if (!right) textureX = 1 - textureX; // if we're looking to the left side of the Map, the texture should be reversed
+
+                    xHit = x;   // save the coordinates of the hit. We only really use these to draw the rays on miniMap.
+                    yHit = y;
+
                     break;
                 }
                 x += dX;
                 y += dY;
             }
 
-            if(vertical_dist > horizontal_dist){
-                return {xHit: xHit_vert, yHit: yHit_vert};
-            } else {
-                return {xHit: xHit_horiz, yHit: yHit_horiz};
+
+
+            // now check against horizontal lines. It's basically the same, just "turned around".
+            // the only difference here is that once we hit a Map block, 
+            // we check if there we also found one in the earlier, vertical run. We'll know that if dist != 0.
+            // If so, we only register this hit if this distance is smaller.
+
+            var slope = angleCos / angleSin;
+            var dY = up ? -1 : 1;
+            var dX = dY * slope;
+            var y = up ? Math.floor(player.y) : Math.ceil(player.y);
+            var x = player.x + (y - player.y) * slope;
+
+            while (x >= 0 && x < MapWidth && y >= 0 && y < MapHeight) {
+                var wallY = Math.floor(y + (up ? -1 : 0));
+                var wallX = Math.floor(x);
+                if (Map[wallY][wallX] > 0) {
+                    var distX = x - player.x;
+                    var distY = y - player.y;
+                    var blockDist = distX*distX + distY*distY;
+                    if (!dist || blockDist < dist) {
+                        dist = blockDist;
+                        xHit = x;
+                        yHit = y;
+                        textureX = x % 1;
+                        if (up) textureX = 1 - textureX;
+                    }
+                    break;
+                }
+                x += dX;
+                y += dY;
             }
+
+            if (dist) {
+                drawRay(xHit, yHit, player.x, player.y);
+            }
+
+        }
+
+        function drawRay(ray_x, ray_y, p_x, p_y){
+            var minimap = document.getElementById("minimap");
+            var ctx = minimap.getContext("2d");
+
+            ctx.strokeStyle = "rgba(100, 0, 0, 0.3)";
+            ctx.lineWidth = 0.5;
+            ctx.beginPath();
+            ctx.moveTo(p_x*MiniMapScale, p_y*MiniMapScale);
+            ctx.lineTo(ray_x*MiniMapScale, ray_y*MiniMapScale);
+            ctx.closePath();
+            ctx.stroke();
         }
     </script>
 </body>
