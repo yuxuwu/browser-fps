@@ -9,8 +9,9 @@
           crossorigin="anonymous"></script>-->
 </head>
 <body>
-        <canvas id="screen"></canvas>
-        <canvas id="minimap"></canvas>
+    <canvas id="screen"></canvas>
+    <canvas id="test"></canvas>
+    <canvas id="minimap"></canvas>
     <script src="./globals.js"></script>
     <script src="./raycasting.js"></script>
     <script src="./draw.js"></script>
@@ -69,6 +70,7 @@
             drawMiniMap();
             castRays();
             drawScreen();
+            drawText();
             setTimeout(gameCycle, 1000/30); //30 Frames babyyy
         }
 
@@ -98,7 +100,7 @@
 
             // Check if new x, y is occupying a wall
             // Use both ceil and floor to consider both ends of the walls
-            if(Map[Math.ceil(newY)][Math.ceil(newX)] != 0 || Map[Math.floor(newY)][Math.floor(newX)] != 0){
+            if(Map[Math.floor(newY)][Math.floor(newX)] != 0){
                 return;
             }
 
