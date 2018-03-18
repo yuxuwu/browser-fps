@@ -41,23 +41,22 @@ function drawScreen() {
 
 
     var scaled_width = StripWidth*ScreenScale;
-    var half_screen_height = ScreenHeight/2;
+    var half_screen_height = ScreenHeight/2*ScreenScale;
     for(let i = 0; i < Strips.length; i++) {
-        var half_strip_height = Strips[i].height/2;
+        var half_strip_height = Strips[i].height/2*ScreenScale;
 
         var x_position = i*StripWidth*ScreenScale;
         var top_bot_height = half_screen_height-half_strip_height;
 
-        ctx.fillStyle = "rgb(0, 0, 0)";
-        //Top third
-        ctx.fillRect(x_position, 0, scaled_width, top_bot_height);
-        ctx.fillStyle = "rgb(0, 0, 0)";
-        //Bottom third
-        ctx.fillRect(x_position, half_screen_height+half_strip_height, scaled_width, top_bot_height);
-
         //Middle
         var fill_style = Strips[i].texture_type == 1 ? "rgb(255, 0, 0)" : "rgb(0, 255, 0)";
         ctx.fillStyle = fill_style;
-        ctx.fillRect(x_position, half_screen_height-half_strip_height, scaled_width, Strips[i].height);
+        ctx.fillRect(x_position, half_screen_height-half_strip_height, scaled_width, Strips[i].height*ScreenScale);
+
+        ctx.fillStyle = "rgb(0, 0, 0)";
+        //Top third
+        ctx.fillRect(x_position, 0, scaled_width, top_bot_height);
+        //Bottom third
+        ctx.fillRect(x_position, half_screen_height+half_strip_height, scaled_width, top_bot_height);
     }
 }

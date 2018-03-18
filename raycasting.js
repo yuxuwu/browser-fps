@@ -107,9 +107,11 @@ function castSingleRay(rayAngle, stripNum) {
     }
 
     if (dist) {
+        dist = Math.sqrt(dist);
         Strips[stripNum] =
         {
-            height: ((ScreenHeight/dist)*ViewDist),
+            //height: ((ScreenHeight/dist)*ViewDist),
+            height: Math.round(ViewDist/dist),
             texture_x: textureX,
             texture_type: textureType
         };
