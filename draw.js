@@ -1,7 +1,3 @@
-function scaleBetween(unscaledNum, minAllowed, maxAllowed, min, max) {
-  return (maxAllowed - minAllowed) * (unscaledNum - min) / (max - min) + minAllowed;
-}
-
 function drawMiniMap() {
     //Draw topdown view of minimap
     var miniMap = document.getElementById("minimap");
@@ -61,15 +57,8 @@ function drawScreen() {
             ctx.fillRect(x_position, half_screen_height-half_strip_height, scaled_width, Strips[i].height*ScreenScale);
         } else {
             // drawImage(image, source_x, source_y, source_width, source_height, canvas_x, canvas_y, canvas_width, canvas_height); will resize image if canvas widtha and height given
-            // ctx.drawImage(Texture.image, Strips[i].texture_x*Texture.width, 0, StripWidth, Texture.height, x_position, half_screen_height-half_strip_height, scaled_width, Strips[i].height*ScreenScale);
-            ctx.drawImage(Texture.image, Strips[i].texture_x*Texture.width, 0, 1, Texture.height, x_position, half_screen_height-half_strip_height, scaled_width, Strips[i].height*ScreenScale);
-            /*
-            if(Strips[i].dark)
-                ctx.fillStyle = "rgb(0, 255, 0)";
-            else
-                ctx.fillStyle = "rgb(0, 122, 0)";
-            ctx.fillRect(x_position, half_screen_height-half_strip_height, scaled_width, Strips[i].height*ScreenScale);
-            */
+            var texture_x = Math.floor(Strips[i].texture_x*Texture.width); // floor to optimize values
+            ctx.drawImage(Texture.image, texture_x, 0, 1, Texture.height, x_position, half_screen_height-half_strip_height, scaled_width, Strips[i].height*ScreenScale);
         }
 
         ctx.fillStyle = "rgb(0, 0, 0)";
