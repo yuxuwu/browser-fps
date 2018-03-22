@@ -12,6 +12,8 @@ function castSingleRay(rayAngle, stripNum) {
 
     let twoPI = Math.PI * 2;
 
+    var previous_x = 0;
+
     // first make sure the angle is between 0 and 360 degrees
     rayAngle %= twoPI;
     if (rayAngle < 0) rayAngle += twoPI;
@@ -108,12 +110,21 @@ function castSingleRay(rayAngle, stripNum) {
 
     if (dist) {
         dist = Math.sqrt(dist);
+
+        var num_blocks = (Math.atan(FOV)*dist)/2;
+        var strip_width = Texture.width/num_blocks;
+        var start_x = previous_x;
+        previous_x = (previous_x + strip_width) % Texture.width;
+
         Strips[stripNum] =
         {
             //height: ((ScreenHeight/dist)*ViewDist),
             height: Math.round(ViewDist/dist),
             texture_x: textureX,
-            texture_type: textureType
+            texture_type: textureType,
+            strip_width: strip_width,
+            start_x: start_x,
+            dark: (yHit % 1 == 0 ? true:false)
         };
         drawRay(xHit, yHit, player.x, player.y);
     }

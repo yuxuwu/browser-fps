@@ -54,10 +54,22 @@ function drawScreen() {
 
         //Middle
         if(Strips[i].texture_type != 1){
-            ctx.fillStyle = "rgb(255, 0, 0)";
+            if(Strips[i].dark)
+                ctx.fillStyle = "rgb(255, 0, 0)";
+            else
+                ctx.fillStyle = "rgb(122, 0, 0)";
             ctx.fillRect(x_position, half_screen_height-half_strip_height, scaled_width, Strips[i].height*ScreenScale);
         } else {
-            ctx.drawImage(Texture.image, Strips[i].texture_x*Texture.width, 0, StripWidth, Texture.height, x_position, half_screen_height-half_strip_height, scaled_width, Strips[i].height*ScreenScale);
+            // drawImage(image, source_x, source_y, source_width, source_height, canvas_x, canvas_y, canvas_width, canvas_height); will resize image if canvas widtha and height given
+            // ctx.drawImage(Texture.image, Strips[i].texture_x*Texture.width, 0, StripWidth, Texture.height, x_position, half_screen_height-half_strip_height, scaled_width, Strips[i].height*ScreenScale);
+            ctx.drawImage(Texture.image, Strips[i].texture_x*Texture.width, 0, 1, Texture.height, x_position, half_screen_height-half_strip_height, scaled_width, Strips[i].height*ScreenScale);
+            /*
+            if(Strips[i].dark)
+                ctx.fillStyle = "rgb(0, 255, 0)";
+            else
+                ctx.fillStyle = "rgb(0, 122, 0)";
+            ctx.fillRect(x_position, half_screen_height-half_strip_height, scaled_width, Strips[i].height*ScreenScale);
+            */
         }
 
         ctx.fillStyle = "rgb(0, 0, 0)";
@@ -78,5 +90,5 @@ function drawText(){
     canvas.style.width = (ScreenWidth * ScreenScale) + "px";
     canvas.style.height = (ScreenHeight * ScreenScale) + "px";
 
-    ctx.drawImage(Texture.image, 0, 0, 96, 96,0, 0, ScreenWidth*ScreenScale, ScreenHeight*ScreenScale);
+    ctx.drawImage(Texture.image, 0, 0, Texture.width, Texture.height,0, 0, ScreenWidth*ScreenScale, ScreenHeight*ScreenScale);
 }

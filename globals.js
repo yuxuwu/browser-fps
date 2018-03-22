@@ -1,3 +1,4 @@
+
 var Map = [
     [1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1],
     [1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1],
@@ -34,7 +35,7 @@ var MiniMapScale = 8;
 var ScreenWidth = 320;
 var ScreenHeight = 240;
 var ScreenScale = 2;
-var StripWidth = 4;
+var StripWidth = 1;
 var NumStrips = Math.ceil(ScreenWidth/StripWidth);
 var FOV = 60 * Math.PI / 180;
 
@@ -44,7 +45,6 @@ var ViewDist = ((ScreenWidth/2) / Math.tan(FOV/2));
 /* Strips Container */
 var Strips = [];
 
-
 /* Textures */
 function Bitmap(src, width, height) {
     this.image = new Image();
@@ -52,4 +52,4 @@ function Bitmap(src, width, height) {
     this.width = width;
     this.height = height;
 }
-var Texture = new Bitmap("./assets/tile01.jpg", 96, 96);
+var Texture = new Bitmap("./assets/hd_wall_texture.jpg", 1024, 1024);

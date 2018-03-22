@@ -8,7 +8,7 @@
           integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8="
           crossorigin="anonymous"></script>-->
 </head>
-<body>
+<body scroll="no" style="overflow: hidden">
     <canvas id="screen"></canvas>
     <canvas id="test"></canvas>
     <canvas id="minimap"></canvas>
@@ -35,6 +35,7 @@
         function bindKeys(){
             document.onkeydown = function(e) {
                 e = e || window.event;
+                e.preventDefault(); //prevent default scrolling
                 switch(e.keyCode) {
                     case 38: //Up
                         player.speed = 1;
@@ -75,7 +76,7 @@
         }
 
         var player = {
-            x : 5,
+            x : 1,
             y : 2,
             dir : 0, //turning direction, left or right
             speed : 0, //forward -> 1, backwards -> -1
