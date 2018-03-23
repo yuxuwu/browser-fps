@@ -12,9 +12,13 @@
     <canvas id="screen"></canvas>
     <canvas id="test"></canvas>
     <canvas id="minimap"></canvas>
+
     <script src="./globals.js"></script>
-    <script src="./raycasting.js"></script>
-    <script src="./draw.js"></script>
+    <script src="./game_engine/explore.js"></script>
+    <script src="./raycasting_engine/raycasting.js"></script>
+    <script src="./raycasting_engine/draw.js"></script>
+    <script src="./ui/ui.js"></script>
+
     <script>
         /* On document loaded */
         document.addEventListener("DOMContentLoaded", function(){
@@ -22,7 +26,7 @@
             MapHeight = Map.length;
 
             screenInit();
-            bindKeys();
+            Explore.bindKeys();
             gameCycle();
         }, false);
 
@@ -30,49 +34,6 @@
             var screen_canvas = document.getElementById("screen");
             screen_canvas.width = ScreenWidth * ScreenScale;
             screen_canvas.height = ScreenHeight * ScreenScale;
-        }
-
-        function bindKeys(){
-            document.onkeydown = function(e) {
-                e = e || window.event;
-                e.preventDefault(); //prevent default scrolling
-                switch(e.keyCode) {
-                    case 38: //Up
-                        player.speed = 1;
-                        break;
-                    case 40: //Down
-                        player.speed = -1;
-                        break;
-                    case 37: //Left
-                        player.dir = -1;
-                        break;
-                    case 39: //Right
-                        player.dir = 1;
-                        break;
-                }
-            }
-
-            document.onkeyup = function(e) {
-                e = e || window.event;
-                switch(e.keyCode){
-                    case 38:
-                    case 40:
-                        player.speed = 0;
-                        break;
-                    case 37:
-                    case 39:
-                        player.dir = 0;
-                        break;
-                }
-            }
-        }
-        function gameCycle(){
-            move();
-            drawMiniMap();
-            castRays();
-            drawScreen();
-            drawText();
-            setTimeout(gameCycle, 1000/30); //30 Frames babyyy
         }
 
         var player = {
@@ -85,30 +46,17 @@
             rotRate : 6 * Math.PI/180 //rate of rotation
         }
 
-        function move(){
-            var moveStep = player.speed * player.moveRate; //determines how far player should move
-            player.rot += player.dir * player.rotRate; //rotation modified by direction
+        function gameCycle(){
 
-            // Calculate new x, y pos of player with trig
-            var newX = player.x + Math.cos(player.rot) * moveStep; //Cos gets the x value of rotation, which determines how far along the x axix moveStep should being modified
-            var newY = player.y + Math.sin(player.rot) * moveStep;
+            Explore.cycle();
 
-            // Check if new x, y is out of bounds
-            if (newY < 0 || newY >= MapHeight*MiniMapScale || newX < 0 || newX >= MapWidth*MiniMapScale) {
-                console.log(newX + " " + newY);
-                return;
-            }
+            Minimap.draw();
+            Raycaster.castRays();
+            Screen.draw();
 
-            // Check if new x, y is occupying a wall
-            // Use both ceil and floor to consider both ends of the walls
-            if(Map[Math.floor(newY)][Math.floor(newX)] != 0){
-                return;
-            }
-
-            // Set new position
-            player.x = newX;
-            player.y = newY;
+            setTimeout(gameCycle, 1000/30); //30 Frames babyyy
         }
+
     </script>
 </body>
 </html>
