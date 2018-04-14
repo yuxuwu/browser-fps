@@ -1,0 +1,47 @@
+/*Set defaults*/
+*,
+*::after,
+*::before {
+	margin: 0;
+	padding: 0;
+	box-sizing: inherit;
+}
+
+html {
+	font-size: 62.5%;
+}
+
+body {
+	box-sizing: border-box;
+}
+/**************/
+
+.section-ui {
+	padding: 20rem 5rem;
+	margin-top: -20vh;
+}
+
+.minimap__container {
+	display: inline-block;
+	float: left;
+}
+
+.screen__container {
+	display: inline-block;
+	float: right;
+	position: relative;
+	margin-right: 10rem;
+}
+
+.screen__display--camera {
+	z-index: 0;
+	top: 0;
+	left: 0;
+}
+
+.screen__display--dialogue {
+	z-index: 1;
+	position: absolute;
+	top: 0;
+	left: 0
+}

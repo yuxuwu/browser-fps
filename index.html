@@ -1,62 +1,81 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Raycaster</title>
-    <!-- <script
-          src="https://code.jquery.com/jquery-3.3.1.min.js"
-          integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8="
-          crossorigin="anonymous"></script>-->
-</head>
-<body scroll="no" style="overflow: hidden">
-    <canvas id="screen"></canvas>
-    <canvas id="test"></canvas>
-    <canvas id="minimap"></canvas>
+	<head>
+		<meta charset="UTF-8">
+		<title>Raycaster</title>
+		<link rel="stylesheet" href="styles.css"></link>
+		<!-- <script
+			src="https://code.jquery.com/jquery-3.3.1.min.js"
+		  integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8="
+		  crossorigin="anonymous"></script>-->
+		
+	</head>
+	<body scroll="no" style="overflow: hidden">
 
-    <script src="./globals.js"></script>
-    <script src="./game_engine/explore.js"></script>
-    <script src="./raycasting_engine/raycasting.js"></script>
-    <script src="./raycasting_engine/draw.js"></script>
-    <script src="./ui/ui.js"></script>
+		<header class="header">
+		</header>
 
-    <script>
-        /* On document loaded */
-        document.addEventListener("DOMContentLoaded", function(){
-            MapWidth = Map[0].length;
-            MapHeight = Map.length;
+		<main>
+			<section class="section-ui">
+				<div class="minimap__container">
+					<canvas class="minimap__display" id="minimap"></canvas>
+				</div>
+				<div class="screen">
+					<div class="screen__container">
+						<canvas class="screen__display--camera" id="screen-canvas"></canvas>
+						<canvas class="screen__display--dialogue" id="screen-dialogue"></canvas>
+					</div>
+				<div>
+			</section>
+		</main>
 
-            screenInit();
-            Explore.bindKeys();
-            gameCycle();
-        }, false);
+		<footer>
+		</footer>
 
-        function screenInit(){
-            var screen_canvas = document.getElementById("screen");
-            screen_canvas.width = ScreenWidth * ScreenScale;
-            screen_canvas.height = ScreenHeight * ScreenScale;
-        }
+		<script src="./globals.js"></script>
+		<script src="./game_engine/explore.js"></script>
+		<script src="./raycasting_engine/raycasting.js"></script>
+		<script src="./raycasting_engine/draw.js"></script>
+		<script src="./ui/ui.js"></script>
 
-        var player = {
-            x : 1,
-            y : 2,
-            dir : 0, //turning direction, left or right
-            speed : 0, //forward -> 1, backwards -> -1
-            rot : 0, // angle of rotation
-            moveRate : 0.18,
-            rotRate : 6 * Math.PI/180 //rate of rotation
-        }
+		<script>
+			/* On document loaded */
+			document.addEventListener("DOMContentLoaded", function(){
+				MapWidth = Map[0].length;
+				MapHeight = Map.length;
 
-        function gameCycle(){
+				screenInit();
+				Explore.bindKeys();
+				gameCycle();
+			}, false);
 
-            Explore.cycle();
+			function screenInit(){
+				var screen_canvas = document.getElementById("screen-canvas");
+				screen_canvas.width = ScreenWidth * ScreenScale;
+				screen_canvas.height = ScreenHeight * ScreenScale;
+			}
 
-            Minimap.draw();
-            Raycaster.castRays();
-            Screen.draw();
+			var player = {
+				x : 1,
+				y : 2,
+				dir : 0, //turning direction, left or right
+				speed : 0, //forward -> 1, backwards -> -1
+				rot : 0, // angle of rotation
+				moveRate : 0.18,
+				rotRate : 6 * Math.PI/180 //rate of rotation
+			}
 
-            setTimeout(gameCycle, 1000/30); //30 Frames babyyy
-        }
+			function gameCycle(){
 
-    </script>
-</body>
+				Explore.cycle();
+
+				Minimap.draw();
+				Raycaster.castRays();
+				Screen.draw();
+
+				setTimeout(gameCycle, 1000/30); //30 Frames babyyy
+			}
+
+		</script>
+	</body>
 </html>
