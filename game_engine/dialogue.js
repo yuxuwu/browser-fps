@@ -21,7 +21,7 @@ var Dialogue = {
 		var beginText = text;
 		console.log(text.substr(5));
 		if(text.length > 57){
-			while(count <= beginText.length) {
+			while(count <= text.length) {
 				if( (count % 57) == 0){		
 					endText = beginText.substr(57);
 					beginText = beginText.slice(0,57);	
@@ -29,13 +29,14 @@ var Dialogue = {
 					offset = offset + 0.04;
 					beginText = endText;
 				}
+				
 				count++;
 			}
 		}
 		else{
 			textBoxtx.fillText(text,0,( ScreenHeight * ScreenScale) * (1-.25) );
 		}
-		if(beginText.length > 0){			
+		if(beginText.length > 0){
 			textBoxtx.fillText(beginText,0,( ScreenHeight * ScreenScale) * (1-.25+offset) );
 		}
 	},
