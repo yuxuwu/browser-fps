@@ -15,7 +15,28 @@ var Dialogue = {
 
 		textBoxtx.font = "20px Arial";
 		textBoxtx.fillStyle = "black";
-		textBoxtx.fillText(text,0,( ScreenHeight * ScreenScale) * (1-.25) );
-	
+		var offset = 0.00;
+		var count = 0;
+		var endText;
+		var beginText = text;
+		console.log(text.substr(5));
+		if(text.length > 57){
+			while(count <= beginText.length) {
+				if( (count % 57) == 0){		
+					endText = beginText.substr(57);
+					beginText = beginText.slice(0,57);	
+					textBoxtx.fillText(beginText,0,( ScreenHeight * ScreenScale) * (1-.25+offset) );
+					offset = offset + 0.04;
+					beginText = endText;
+				}
+				count++;
+			}
+		}
+		else{
+			textBoxtx.fillText(text,0,( ScreenHeight * ScreenScale) * (1-.25) );
+		}
+		if(beginText.length > 0){			
+			textBoxtx.fillText(beginText,0,( ScreenHeight * ScreenScale) * (1-.25+offset) );
+		}
 	},
 }

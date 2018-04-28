@@ -26,7 +26,7 @@ var Explore = {
                     player.dir = 1;
                     break;
 				case 69: //e
-					var text = "Hello World";
+					var text = "bbbbbbaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaadeeeeeeeeeeeffffffffffffffffffffffffffffffffffffffffffffffffffffffffff";// 57 character limit
 					Dialogue.cycle(text);
 					break;
             }
