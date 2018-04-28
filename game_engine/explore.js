@@ -25,6 +25,10 @@ var Explore = {
                 case 39: //Right
                     player.dir = 1;
                     break;
+				case 69: //e
+					var text = "Hello World";
+					Dialogue.cycle(text);
+					break;
             }
         }
 
