@@ -8,7 +8,7 @@ var Explore = {
         this.move();
     },
 
-    bindKeys : function(){
+    bindKeys : function(game){
         document.onkeydown = function(e) {
             e = e || window.event;
             e.preventDefault(); //prevent default scrolling
@@ -26,11 +26,20 @@ var Explore = {
                     player.dir = 1;
                     break;
 				case 69: //e
-					var text = "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb";// 57 character limit
-					Dialogue.cycle(text);
-					break;
+           var text = "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb";// 57 character limit
+		       Dialogue.cycle(text);
+           var func = function(i){
+             return function() {
+               e = e || window.event;
+               e.preventDefault();
+               if(e.keyCode == 13){
+                 console.log("OK");
+                 return;
+               }
+               setTimeout(func(++i),50);
             }
-        }
+          }
+      }
 
         document.onkeyup = function(e) {
             e = e || window.event;
