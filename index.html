@@ -37,6 +37,7 @@
 		<script src="./game_engine/dialogue.js"></script>
 		<script src="./raycasting_engine/raycasting.js"></script>
 		<script src="./raycasting_engine/draw.js"></script>
+    <script src="./sprites.js"></script>
 		<script>
 			/* On document loaded */
 			document.addEventListener("DOMContentLoaded", function(){
@@ -65,14 +66,11 @@
 			}
 
 			function gameCycle(){
-
+				let game = setTimeout(gameCycle, 1000/30); //30 Frames babyyy
 				Explore.cycle();
-
 				Minimap.draw();
 				Raycaster.castRays();
 				Screen.draw();
-
-				setTimeout(gameCycle, 1000/30); //30 Frames babyyy
 			}
 
 		</script>

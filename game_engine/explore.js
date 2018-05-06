@@ -28,18 +28,19 @@ var Explore = {
 				case 69: //e
            var text = "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb";// 57 character limit
 		       Dialogue.cycle(text);
-           var func = function(i){
-             return function() {
-               e = e || window.event;
-               e.preventDefault();
-               if(e.keyCode == 13){
-                 console.log("OK");
-                 return;
-               }
-               setTimeout(func(++i),50);
-            }
+           //var func = function(i){
+            // return function() {
+             //  e = e || window.event;
+              // e.preventDefault();
+              // if(e.keyCode == 13){
+               //  console.log("OK");
+                // return;
+               //}
+               //setTimeout(func(++i),50);
+           // }
+          //}
           }
-      }
+        }
 
         document.onkeyup = function(e) {
             e = e || window.event;
