@@ -25,6 +25,12 @@ var Explore = {
                 case 39: //Right
                     player.dir = 1;
                     break;
+                case 13:
+                    setTimeout(gameCycle, 1000/30); 
+                    var textBox = document.getElementById("screen-dialogue");
+                    var textBoxtx = textBox.getContext('2d');
+                    textBoxtx.clearRect(0,0,10000,10000);
+                    break;
 				case 69: //e
            var text = "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb";// 57 character limit
 		       Dialogue.cycle(text);

@@ -64,14 +64,24 @@
 				moveRate : 0.18,
 				rotRate : 6 * Math.PI/180 //rate of rotation
 			}
-
+      
+      var ran = false;
 			function gameCycle(){
 				let game = setTimeout(gameCycle, 1000/30); //30 Frames babyyy
 				Explore.cycle();
 				Minimap.draw();
 				Raycaster.castRays();
 				Screen.draw();
-			}
+        console.log(player.x);
+        console.log(player.y);
+
+        if( (9 < player.x && player.x < 11) && (9 < player.y && player.y < 11)
+            && ran == false ){
+          Dialogue.cycle("HELALO");          
+          clearTimeout(game);
+          ran = true;
+        }
+      }
 
 		</script>
 	</body>

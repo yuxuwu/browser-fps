@@ -42,5 +42,6 @@ var Dialogue = {
       beginText = "";
     }
     ran = true;
+    delete textBoxtx;
 	},
 }
