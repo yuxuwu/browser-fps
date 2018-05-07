@@ -64,24 +64,29 @@
 				moveRate : 0.18,
 				rotRate : 6 * Math.PI/180 //rate of rotation
 			}
-      
       var ran = false;
+      function initiate(num1,num2,running,monster){ 
+        if( (num1 < player.x && player.x < num2) && (num1 < player.y &&
+              player.y < num2)
+            && ran == false ){
+          var Enemy = new Bitmap("./assets/" + monster + ".png", 600, 600); 
+          var screen_canvas = document.getElementById("screen-canvas");
+          var ctx = screen_canvas.getContext("2d");
+          ctx.drawImage(Enemy.image, 50,50, 600, 600);
+          Dialogue.cycle("Found You! Time to battle!");          
+          clearTimeout(running);
+          ran = true;
+          }
+      }
+      
 			function gameCycle(){
 				let game = setTimeout(gameCycle, 1000/30); //30 Frames babyyy
 				Explore.cycle();
 				Minimap.draw();
 				Raycaster.castRays();
 				Screen.draw();
-        console.log(player.x);
-        console.log(player.y);
-
-        if( (9 < player.x && player.x < 11) && (9 < player.y && player.y < 11)
-            && ran == false ){
-          Dialogue.cycle("HELALO");          
-          clearTimeout(game);
-          ran = true;
+        initiate(8,11,game,"monster");
         }
-      }
 
 		</script>
 	</body>
